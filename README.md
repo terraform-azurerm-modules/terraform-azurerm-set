@@ -4,12 +4,10 @@
 
 This Terraform module creates a "set", ready for VMs to be created. Resources created:
 
-**Resource Type** | **Default**
-application security group | true*
-availability set | true
-load balancer | false
-app gateway backend pool | false
-
+* application security group (always)
+* availability set (bool)
+* load balancer (bool)
+* app gateway backend pool (bool)
 
 > This is a WORK IN PROGRESS and will definitely change. Support is yet to be added for both basic load balancer creation and association with App Gateway backend pools.
 
