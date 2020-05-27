@@ -21,8 +21,8 @@ variable "tags" {
   default     = {}
 }
 
-variable "application_security_group" {
-  description = "Boolean to control creation of application security group."
+variable "availability_set" {
+  description = "Boolean to control creation of availability set."
   type        = bool
   default     = false // default set in local
 }
@@ -37,9 +37,4 @@ variable "defaults" {
   description = "Collection of default values."
   type        = any
   default     = {}
-}
-
-variable "module_depends_on" {
-  type    = any
-  default = null
 }

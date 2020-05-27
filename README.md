@@ -18,6 +18,7 @@ This Terraform module creates a "set", ready for VMs to be created. Resources cr
 ```terraform
 locals {
   defaults = {
+    module_depends_on    = [ azurerm_resource_rg ]
     resource_group_name  = azurerm_resource_group.rg.name
     location             = azurerm_resource_group.rg.location
 }
