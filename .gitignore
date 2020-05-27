@@ -1,0 +1,6 @@
+.terraform
+terraform.tfvars
+terraform.tfstate*
+*.old
+test.tf
+.terraform.tfstate.lock.info
