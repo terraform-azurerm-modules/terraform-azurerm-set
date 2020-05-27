@@ -24,17 +24,22 @@ variable "tags" {
 variable "application_security_group" {
   description = "Boolean to control creation of application security group."
   type        = bool
-  default     = true
+  default     = false // default set in local
 }
 
 variable "load_balancer" {
   description = "Boolean to control creation of basic load balancer."
   type        = bool
-  default     = false
+  default     = null // default set in local
 }
 
 variable "defaults" {
   description = "Collection of default values."
   type        = any
   default     = {}
+}
+
+variable "module_depends_on" {
+  type    = any
+  default = null
 }
