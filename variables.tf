@@ -30,7 +30,23 @@ variable "availability_set" {
 variable "load_balancer" {
   description = "Boolean to control creation of basic load balancer."
   type        = bool
-  default     = null // default set in local
+  default     = false
+}
+
+variable "subnet_id" {
+  description = "Resource ID for the subnet to attach the load balancer's front-end."
+  type        = string
+  default     = ""
+}
+
+variable "load_balancer_rules" {
+  description = "Array of load balancer rules."
+  type = list(object({
+    protocol      = string
+    frontend_port = number
+    backend_port  = number
+  }))
+  default = []
 }
 
 variable "defaults" {

@@ -6,5 +6,6 @@ output "set" {
     tags                       = local.tags
     application_security_group = azurerm_application_security_group.set
     availability_set           = lookup(azurerm_availability_set.set, var.name, null)
+    load_balancer              = lookup(azurerm_lb.set, var.name, null)
   }
 }
