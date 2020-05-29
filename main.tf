@@ -8,7 +8,7 @@ locals {
 
   load_balancer_rules_default = length(local.load_balancer) > 0 ? [{ protocol = "Tcp", frontend_port = 443, backend_port = 443 }] : []
   load_balancer_rules         = length(var.load_balancer_rules) > 0 ? var.load_balancer_rules : lookup(var.defaults, "load_balancer_rules", local.load_balancer_rules_default)
-  probe_port                  = try(local.load_balancer_rules[0].backend_port, 0)
+  probe_port                  = try(local.load_balancer_rules[0].backend_port, 0) // No longer used
 
   load_balancer_rules_map = {
     for rule in local.load_balancer_rules :
