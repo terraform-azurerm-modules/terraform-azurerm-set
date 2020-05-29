@@ -49,8 +49,21 @@ variable "load_balancer_rules" {
   default = []
 }
 
+variable "module_depends_on" {
+  type    = any
+  default = []
+}
+
 variable "defaults" {
   description = "Collection of default values."
-  type        = any
-  default     = {}
+  type = object({
+    module_depends_on   = any
+    resource_group_name = string
+    location            = string
+    tags                = map(string)
+    availability_set    = bool
+    load_balancer       = bool
+    subnet_id           = string
+  })
+  default = null
 }

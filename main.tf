@@ -8,6 +8,8 @@ locals {
 
   load_balancer_rules_default = length(local.load_balancer) > 0 ? [{ protocol = "Tcp", frontend_port = 443, backend_port = 443 }] : []
   load_balancer_rules         = length(var.load_balancer_rules) > 0 ? var.load_balancer_rules : lookup(var.defaults, "load_balancer_rules", local.load_balancer_rules_default)
+  probe_port                  = try(local.load_balancer_rules[0].backend_port, 0)
+
   load_balancer_rules_map = {
     for rule in local.load_balancer_rules :
     join("-", [rule.protocol, rule.frontend_port, rule.backend_port]) => {
@@ -61,13 +63,30 @@ resource "azurerm_lb_backend_address_pool" "set" {
   name                = each.value
 }
 
+resource "azurerm_lb_probe" "set" {
+  for_each            = local.load_balancer_rules_map
+  name                = "probe-port-${each.value.backend_port}"
+  resource_group_name = data.azurerm_resource_group.set.name
+  loadbalancer_id     = azurerm_lb.set[var.name].id
+  port                = each.value.backend_port // local.probe_port
+}
+
 resource "azurerm_lb_rule" "set" {
   for_each                       = local.load_balancer_rules_map
+  name                           = each.value.name
   resource_group_name            = data.azurerm_resource_group.set.name
   loadbalancer_id                = azurerm_lb.set[var.name].id
-  name                           = each.value.name
   protocol                       = each.value.protocol
   frontend_port                  = each.value.frontend_port
   backend_port                   = each.value.backend_port
   frontend_ip_configuration_name = "InternalIpAddress"
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.set[var.name].id
+  probe_id                       = azurerm_lb_probe.set[each.value.name].id
+
+  // Resource defaults as per https://www.terraform.io/docs/providers/azurerm/r/lb_rule.html
+  enable_floating_ip      = false
+  idle_timeout_in_minutes = 4
+  load_distribution       = "Default" // All 5 tuples. Could  be set to  SourceIP or SourceIPProtocol.
+  enable_tcp_reset        = false
+  disable_outbound_snat   = false
 }
