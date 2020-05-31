@@ -1,11 +1,12 @@
-output "set" {
+output "name" {
+  value = var.name
+}
+
+output "set_object" {
   value = {
-    name                       = var.name
-    resource_group_name        = data.azurerm_resource_group.set.name
-    location                   = local.location
-    tags                       = local.tags
-    application_security_group = azurerm_application_security_group.set
-    availability_set           = lookup(azurerm_availability_set.set, var.name, null)
-    load_balancer              = lookup(azurerm_lb.set, var.name, null)
+    application_security_group_id = azurerm_application_security_group.set.id
+    availability_set_id           = try(azurerm_availability_set.set[var.name].id, null)
+    load_balancer_id              = try(azurerm_lb.set[var.name].id, null)
+    load_balancer_backend_pool_id = try(azurerm_lb_backend_address_pool.set[var.name].id, null)
   }
 }

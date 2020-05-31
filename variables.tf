@@ -46,24 +46,39 @@ variable "load_balancer_rules" {
     frontend_port = number
     backend_port  = number
   }))
-  default = []
+
+  // Simple default added here - couldn't see this default being overridden much.
+  // Set to [] if allowing load_balancer_rules_map into the default object.
+  default = [{
+    protocol      = "Tcp",
+    frontend_port = 443,
+    backend_port  = 443
+    }
+  ]
 }
 
 variable "module_depends_on" {
-  type    = any
+  type    = list(any)
   default = []
 }
 
 variable "defaults" {
   description = "Collection of default values."
   type = object({
-    module_depends_on   = any
+    module_depends_on   = list(any)
     resource_group_name = string
     location            = string
     tags                = map(string)
     availability_set    = bool
     load_balancer       = bool
     subnet_id           = string
+    /*
+    load_balancer_rules_map = list(object({
+      protocol      = string
+      frontend_port = number
+      backend_port  = number
+    }))
+    */
   })
   default = null
 }
