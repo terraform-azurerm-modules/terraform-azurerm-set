@@ -80,5 +80,13 @@ variable "defaults" {
     }))
     */
   })
-  default = null
+  default = {
+    module_depends_on   = null
+    resource_group_name = null
+    location            = null
+    tags                = null
+    availability_set    = null
+    load_balancer       = null
+    subnet_id           = null
+  }
 }
