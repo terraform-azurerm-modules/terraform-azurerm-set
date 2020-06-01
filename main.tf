@@ -1,15 +1,11 @@
 locals {
-  module_depends_on = try(coalescelist(var.module_depends_on, var.defaults.module_depends_on), [])
-
-  location = var.location != "" ? var.location : lookup(var.defaults, "location", data.azurerm_resource_group.set.location)
+  resource_group_name = coalesce(var.resource_group_name, lookup(var.defaults, "resource_group_name", "unspecified"))
+  location = try(coalesce(var.location, var.defaults.location), data.azurerm_resource_group.set.location)
   tags     = merge(data.azurerm_resource_group.set.tags, lookup(var.defaults, "tags", {}), var.tags)
 
   availability_set = var.availability_set || var.defaults.availability_set ? true : false
   load_balancer    = var.load_balancer || var.defaults.load_balancer ? true : false
   subnet_id        = var.subnet_id != "" ? var.subnet_id : lookup(var.defaults, "subnet_id", null)
-
-  // load_balancer_rules_default = local.load_balancer ? [{ protocol = "Tcp", frontend_port = 443, backend_port = 443 }] : []
-  // load_balancer_rules         = length(var.load_balancer_rules) > 0 ? var.load_balancer_rules : lookup(var.defaults, "load_balancer_rules", local.load_balancer_rules_default)
 
   load_balancer_rules_map = {
     for rule in var.load_balancer_rules :
@@ -23,7 +19,7 @@ locals {
 }
 
 data "azurerm_resource_group" "set" {
-  name = coalesce(var.resource_group_name, lookup(var.defaults, "resource_group_name", "unspecified"))
+  name = local.resource_group_name
 }
 
 resource "azurerm_application_security_group" "set" {

@@ -57,15 +57,9 @@ variable "load_balancer_rules" {
   ]
 }
 
-variable "module_depends_on" {
-  type    = list(any)
-  default = []
-}
-
 variable "defaults" {
   description = "Collection of default values."
   type = object({
-    module_depends_on   = list(any)
     resource_group_name = string
     location            = string
     tags                = map(string)
@@ -81,12 +75,18 @@ variable "defaults" {
     */
   })
   default = {
-    module_depends_on   = null
     resource_group_name = null
     location            = null
-    tags                = null
+    tags                = {}
     availability_set    = null
     load_balancer       = null
     subnet_id           = null
   }
+}
+
+// ==============================================================================
+
+variable "module_depends_on" {
+  type    = list(any)
+  default = []
 }
