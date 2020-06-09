@@ -1,7 +1,7 @@
 locals {
   resource_group_name = coalesce(var.resource_group_name, lookup(var.defaults, "resource_group_name", "unspecified"))
-  location = try(coalesce(var.location, var.defaults.location), data.azurerm_resource_group.set.location)
-  tags     = merge(data.azurerm_resource_group.set.tags, lookup(var.defaults, "tags", {}), var.tags)
+  location = coalesce(var.location, var.defaults.location)
+  tags     = merge(lookup(var.defaults, "tags", {}), var.tags)
 
   availability_set = var.availability_set || var.defaults.availability_set ? true : false
   load_balancer    = var.load_balancer || var.defaults.load_balancer ? true : false
@@ -18,14 +18,10 @@ locals {
   }
 }
 
-data "azurerm_resource_group" "set" {
-  name = local.resource_group_name
-}
-
 resource "azurerm_application_security_group" "set" {
   depends_on          = [var.module_depends_on]
   name                = var.name
-  resource_group_name = data.azurerm_resource_group.set.name
+  resource_group_name = local.resource_group_name
   location            = local.location
   tags                = local.tags
 }
@@ -34,7 +30,7 @@ resource "azurerm_availability_set" "set" {
   depends_on          = [var.module_depends_on]
   for_each            = toset(local.availability_set ? [var.name] : [])
   name                = each.value
-  resource_group_name = data.azurerm_resource_group.set.name
+  resource_group_name = local.resource_group_name
   location            = local.location
   tags                = local.tags
 }
@@ -43,7 +39,7 @@ resource "azurerm_lb" "set" {
   depends_on          = [var.module_depends_on]
   for_each            = toset(local.load_balancer ? [var.name] : [])
   name                = each.value
-  resource_group_name = data.azurerm_resource_group.set.name
+  resource_group_name = local.resource_group_name
   location            = local.location
   tags                = local.tags
 
@@ -58,7 +54,7 @@ resource "azurerm_lb" "set" {
 
 resource "azurerm_lb_backend_address_pool" "set" {
   for_each            = toset(local.load_balancer ? [var.name] : [])
-  resource_group_name = data.azurerm_resource_group.set.name
+  resource_group_name = local.resource_group_name
   loadbalancer_id     = azurerm_lb.set[var.name].id
   name                = each.value
 }
@@ -66,7 +62,7 @@ resource "azurerm_lb_backend_address_pool" "set" {
 resource "azurerm_lb_probe" "set" {
   for_each            = local.load_balancer ? local.load_balancer_rules_map : {}
   name                = "probe-port-${each.value.backend_port}"
-  resource_group_name = data.azurerm_resource_group.set.name
+  resource_group_name = local.resource_group_name
   loadbalancer_id     = azurerm_lb.set[var.name].id
   port                = each.value.backend_port // local.probe_port
 }
@@ -74,7 +70,7 @@ resource "azurerm_lb_probe" "set" {
 resource "azurerm_lb_rule" "set" {
   for_each                       = local.load_balancer ? local.load_balancer_rules_map : {}
   name                           = each.value.name
-  resource_group_name            = data.azurerm_resource_group.set.name
+  resource_group_name            = local.resource_group_name
   loadbalancer_id                = azurerm_lb.set[var.name].id
   protocol                       = each.value.protocol
   frontend_port                  = each.value.frontend_port
