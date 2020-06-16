@@ -1,7 +1,7 @@
 locals {
   resource_group_name = coalesce(var.resource_group_name, lookup(var.defaults, "resource_group_name", "unspecified"))
-  location = coalesce(var.location, var.defaults.location)
-  tags     = merge(lookup(var.defaults, "tags", {}), var.tags)
+  location            = coalesce(var.location, var.defaults.location)
+  tags                = merge(lookup(var.defaults, "tags", {}), var.tags)
 
   availability_set = var.availability_set || var.defaults.availability_set ? true : false
   load_balancer    = var.load_balancer || var.defaults.load_balancer ? true : false

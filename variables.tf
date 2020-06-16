@@ -39,6 +39,12 @@ variable "subnet_id" {
   default     = ""
 }
 
+variable "application_gateway_backend_pool_id" {
+  description = "Resource ID for an application gateway backend pool."
+  type        = string
+  default     = ""
+}
+
 variable "load_balancer_rules" {
   description = "Array of load balancer rules."
   type = list(object({
