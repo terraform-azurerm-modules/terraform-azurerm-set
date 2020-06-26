@@ -1,5 +1,7 @@
 # terraform-azurerm-set
 
+***Note that this repo will be deprecated.***
+
 ## Description
 
 This Terraform module creates a "set", ready for VMs to be created. Resources created:
